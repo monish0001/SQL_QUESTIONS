@@ -1,0 +1,35 @@
+select 
+    emp_id,
+    sum(case when salary_component_type = 'salary' then val end) as salary,
+    sum(case when salary_component_type = 'bonus' then val end) as bonus,
+    sum(case when salary_component_type = 'hike_percent' then val end) as hike_percent
+from emp_compensation
+group by emp_id;
+
+
+
+
+
+with data as(
+SELECT emp_id,
+
+case 
+    when salary_component_type='salary' then val
+end as salary,
+case 
+    when salary_component_type='bonus' then val
+end as bonus,
+case 
+    when salary_component_type='hike_percent' then val
+end as hike_percent
+
+from emp_compensation
+)
+select emp_id,
+sum(salary) as salary,
+sum(bonus) as bonus,
+sum(hike_percent) as hike_percent
+
+from data
+group by emp_id
+
