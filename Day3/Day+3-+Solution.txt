@@ -1,0 +1,49 @@
+WITH first_visit AS (
+    SELECT customer_id, MIN(order_date) AS first_visit_date
+    FROM customer_orders
+    GROUP BY customer_id
+)
+SELECT co.order_date,
+       SUM(CASE WHEN co.order_date = fv.first_visit_date THEN 1 ELSE 0 END) AS first_visit_flag,
+       SUM(CASE WHEN co.order_date != fv.first_visit_date THEN 1 ELSE 0 END) AS repeat_visit_flag
+FROM customer_orders co
+INNER JOIN first_visit fv ON co.customer_id = fv.customer_id
+GROUP BY co.order_date;
+
+
+
+
+
+
+
+
+
+WITH data AS (
+    SELECT customer_id, MIN(order_date) AS first_order_date
+    FROM customer_orders
+    GROUP BY customer_id
+),
+data1 AS (
+    SELECT c1.order_id	,c1.customer_id	,c1.order_date, c2.first_order_date	,c1.order_amount
+    FROM customer_orders AS c1
+    INNER JOIN data AS c2
+    ON c1.customer_id = c2.customer_id
+), data2 as(
+
+SELECT order_id	,customer_id	,order_date, first_order_date,
+        case
+            when order_date=first_order_date then 1 
+            else 0
+        end as first_order_flag,
+        case
+            when order_date!=first_order_date then 1 
+                else 0
+        
+        end as repeat_order_flag
+        
+    FROM data1  
+)
+
+SELECT order_date,sum(first_order_flag) as new_customers, sum(repeat_order_flag) as repeat_customers FROM data2
+GROUP BY order_date;
+
