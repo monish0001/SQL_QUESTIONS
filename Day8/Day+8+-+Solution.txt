@@ -10,3 +10,25 @@ WITH score_details AS (
 SELECT s.*, p.name AS person_name
 FROM person p
 INNER JOIN score_details s ON p.personid = s.pid;
+
+
+
+with data as(
+select
+pid,
+sum(Score) as total_friend_score,
+count(fid) as no_of_friends
+from friend as f 
+inner join person as p
+on PersonID=fid
+group by pid having sum(Score)>=100
+)
+select pid,total_friend_score,no_of_friends,name as person_name
+from data 
+inner join person on pid=PersonID;
+
+
+
+
+
+
