@@ -1,0 +1,37 @@
+with product_wise_sales as (
+    select product_id, sum(sales) as product_sales
+    from orders
+    group by product_id
+),
+cal_sales as (
+    select product_id, product_sales,
+    sum(product_sales) over (order by product_sales desc rows between unbounded preceding and 0 preceding) as running_sales,
+    0.8 * sum(product_sales) over () as total_sales
+    from product_wise_sales
+)
+select * from cal_sales where running_sales <= total_sales;
+
+
+
+
+WITH data AS (
+    SELECT 
+        product_id,
+        SUM(sales) AS product_sales
+    FROM orders
+    GROUP BY product_id
+),
+data1 AS (
+    SELECT
+        product_id,
+        product_sales,
+        SUM(product_sales) OVER (
+            ORDER BY product_sales DESC 
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS running_sales,
+        0.8 * sum(product_sales) over () as total_sales
+    FROM data
+)
+select * from data1 where running_sales<=total_sales
+
+
