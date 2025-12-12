@@ -4,7 +4,7 @@ inner join emp m on e.manager_id = m.emp_id
 where e.salary > m.salary;
 
 
-
+# Self Join Explanation
 
 
 
