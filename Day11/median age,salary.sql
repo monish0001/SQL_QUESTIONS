@@ -1,10 +1,10 @@
-create table emp(
+create  table emp(
 emp_id int,
 emp_name varchar(20),
 department_id int,
 salary int,
 manager_id int,
-emp_age int);
+emp_age int)
 
 insert into emp
 values
@@ -36,18 +36,27 @@ from (select
 where abs(rn_asc-rn_dsc)<=1
 group by department_id
 
-SELECT 
+
+
+------------------------------------------------------
+WITH cte1 AS (
+  SELECT 
     department_id,
-    AVG(emp_age) AS avg_age
-FROM (
-    SELECT department_id,
-           emp_age,
-           ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY emp_age ASC) AS rn_asc,
-           ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY emp_age DESC) AS rn_desc
-    FROM emp
-) t
-WHERE ABS(rn_asc - rn_desc) <= 1
-GROUP BY department_id
+    salary,
+    ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary) AS rn,
+    COUNT(*) OVER (PARTITION BY department_id) AS count_in_dept
+  FROM emp
+)
+SELECT 
+department_id,
+avg(salary) as median_salary from cte1
+where rn in ((count_in_dept+1)/2,(count_in_dept+2)/2)
+group by department_id
+
+select * from emp
+
+
+
 
 
 
