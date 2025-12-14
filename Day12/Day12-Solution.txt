@@ -1,0 +1,17 @@
+WITH player_scores AS (
+    SELECT first_player AS player_id, first_score AS score FROM matches
+    UNION ALL
+    SELECT second_player AS player_id, second_score AS score FROM matches
+),
+final_scores AS (
+    SELECT p.group_id, ps.player_id, SUM(score) AS score
+    FROM player_scores ps
+    INNER JOIN players p ON p.player_id = ps.player_id
+    GROUP BY p.group_id, ps.player_id
+),
+final_ranking AS (
+    SELECT *,
+           RANK() OVER(PARTITION BY group_id ORDER BY score DESC, player_id ASC) AS rn
+    FROM final_scores
+)
+select * from final_ranking  where rn=1
