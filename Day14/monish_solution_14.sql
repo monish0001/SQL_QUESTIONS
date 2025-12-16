@@ -14,23 +14,23 @@ select * from spending
 
 with cte1 as (
 select 
-user_id,
 spend_date,
+user_id,
 max(platform) as platform,
 sum(amount) as amount
 from spending
 group by user_id, spend_date having count(distinct platform)=1
 union all
 select 
-user_id,
 spend_date,
+user_id,
 'both' as platform,
 sum(amount) as amount
 from spending
 group by user_id, spend_date having count(distinct platform)=2
 union all
-select distinct 
-spend_date,
+select  
+distinct spend_date,
 NULL AS user_id,
 'both' as platform,
 0 as amount
@@ -39,26 +39,35 @@ from spending
 spend_date,
 platform,
 sum(amount) as total_amount,
-count(*) total_users
+count(distinct user_id) total_users
 from cte1
 group by spend_date,
 platform
-order by spend_date,
-platform
-
-
-
-
-with all_spend as (
-    select spend_date, user_id, max(platform) as platform, sum(amount) as amount from spending
-    group by spend_date, user_id having count(distinct platform) = 1
-    union all
-    select spend_date, user_id, 'both' as platform, sum(amount) as amount from spending
-    group by spend_date, user_id having count(distinct platform) = 2
-    union all
-    select distinct spend_date, null as user_id, 'both' as platform, 0 as amount from spending
-)
-select spend_date, platform, sum(amount) as total_amount, count(distinct user_id) as total_users
-from all_spend
-group by spend_date, platform
 order by spend_date, platform desc
+
+
+
+---------------------------- DIFFRENCE BETWEEN DELETE AND TRUNCATE------------------------------
+--truncate reset index,  INT IDENTITY(1,1) PRIMARY KEY,
+--delete not 
+
+CREATE TABLE monish (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(200)
+);
+
+insert into monish values('kanan')
+insert into monish values('ajay')
+insert into monish values('nijam')
+
+select * from monish
+
+truncate table monish
+
+delete from monish
+
+insert into monish values('raj')
+insert into monish values('kumar')
+insert into monish values('salman')
+
+
