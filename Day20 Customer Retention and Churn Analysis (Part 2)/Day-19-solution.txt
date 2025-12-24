@@ -1,0 +1,7 @@
+select month(last_month.order_date) as month_date, count(distinct last_month.cust_id)
+from transactions last_month
+left join transactions this_month
+on this_month.cust_id = last_month.cust_id 
+   and DATEDIFF(month, last_month.order_date, this_month.order_date) = 1
+where this_month.cust_id is null
+group by month(last_month.order_date);
